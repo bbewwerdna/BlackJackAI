@@ -25,7 +25,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 193154}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -4.99, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -95,7 +95,7 @@ MonoBehaviour:
   - {fileID: 21300098, guid: 8e08201cec45666458ce8302959c3f09, type: 3}
   - {fileID: 21300100, guid: 8e08201cec45666458ce8302959c3f09, type: 3}
   - {fileID: 21300102, guid: 8e08201cec45666458ce8302959c3f09, type: 3}
-  cardBack: {fileID: 21300114, guid: 54d8b8d0d26cc2946bbf8bae9ccf1205, type: 3}
+  cardBack: {fileID: 21300114, guid: 8e08201cec45666458ce8302959c3f09, type: 3}
   cardIndex: 0
 --- !u!114 &11485408
 MonoBehaviour:
@@ -177,7 +177,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300114, guid: 54d8b8d0d26cc2946bbf8bae9ccf1205, type: 3}
+  m_Sprite: {fileID: 21300114, guid: 8e08201cec45666458ce8302959c3f09, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
