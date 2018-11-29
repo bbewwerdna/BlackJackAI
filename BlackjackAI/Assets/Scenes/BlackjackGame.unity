@@ -299,7 +299,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -52, y: -250.8}
+  m_AnchoredPosition: {x: -46, y: -143}
   m_SizeDelta: {x: 68, y: 25.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &613701921
@@ -480,7 +480,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 60.6, y: -250.8}
+  m_AnchoredPosition: {x: 63, y: -143}
   m_SizeDelta: {x: 68, y: 25.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &866927595
@@ -858,6 +858,64 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1184400645
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1184400648}
+  - component: {fileID: 1184400647}
+  - component: {fileID: 1184400646}
+  m_Layer: 0
+  m_Name: AI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1184400646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1184400645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb287cb53f4ab764c8f9d680650bf91e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  start: {x: -2, y: -2, z: 0}
+  cardOffset: 0.3
+  cardPrefab: {fileID: 1528662494}
+  faceUp: 1
+  reverselayerOrder: 1
+--- !u!114 &1184400647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1184400645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1280f047aa0dd34dae01430cab4b31d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isGameDeck: 0
+--- !u!4 &1184400648
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1184400645}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 275.73914, y: 185.46033, z: -3.8125}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1214812202
 GameObject:
   m_ObjectHideFlags: 0
@@ -892,7 +950,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 160, y: -135}
+  m_AnchoredPosition: {x: 160, y: -74}
   m_SizeDelta: {x: 65.2, y: 26.9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1214812204
@@ -1115,12 +1173,14 @@ MonoBehaviour:
   player: {fileID: 623406820}
   dealer: {fileID: 995706982}
   deck: {fileID: 1141509191}
+  AI: {fileID: 1184400647}
   HitButton: {fileID: 613701921}
   StayButton: {fileID: 866927595}
   Deal: {fileID: 1431405421}
-  Spot1: {fileID: 0}
+  card: 0
+  Spot1: {fileID: 1214812204}
   winText: {fileID: 150483421}
-  button: 1
+  sit: {fileID: 1429154587}
 --- !u!4 &1393858441
 Transform:
   m_ObjectHideFlags: 0
@@ -1201,7 +1261,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Sit
+  m_Text: 
 --- !u!222 &1429154588
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1243,7 +1303,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -171, y: -250.8}
+  m_AnchoredPosition: {x: -154, y: -143}
   m_SizeDelta: {x: 68, y: 25.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1431405421

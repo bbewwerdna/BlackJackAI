@@ -91,8 +91,6 @@ public class CardStack : MonoBehaviour
             {
                 aces++;
             }
-            
-
         }
         for(int i =0; i<aces; i++)
         {
