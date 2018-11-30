@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class CardStack : MonoBehaviour
 {
     List<int> cards;
+    List<int> cardsss = new List<int>();
 
     public bool isGameDeck;
 
@@ -56,9 +57,52 @@ public class CardStack : MonoBehaviour
             CardAdded(this, new CardEventArgs(card));
         }
     }
+    public int Hand(int pos)
+    {
+        cardsss.Clear();
+        int aces = 0;
+        int total = 0;
+        foreach (int card in GetCards())
+        {
+            int cardRank = card % 13;
+            //case card value is from 2 - 9
+            if (cardRank < 8)
+            {
+                cardRank += 2;
+                cardsss.Add(cardRank);
+                total = total + cardRank;
+            }
+            //case card value is 10
+            else if (cardRank >= 8 && cardRank < 12)
+            {
+                cardRank = 10;
+                cardsss.Add(cardRank);
+                total = total + cardRank;
+            }
+            else
+            {
+                aces++;
+            }
+        }
+        for (int i = 0; i < aces; i++)
+        {
+            if (total + 11 < 22)
+            {
+                total = total + 11;
+                cardsss.Add(11);
+            }
+            else
+            {
+                total = total + 1;
+                cardsss.Add(1);
+            }
+        }
 
+        return cardsss[pos];
+    }
     public int HandValue()
     {
+        //cardsss.Clear();
         int total = 0;
         int aces = 0;
         foreach(int card in GetCards())
@@ -68,25 +112,16 @@ public class CardStack : MonoBehaviour
             if(cardRank < 8)
             {
                 cardRank += 2;
+                //Hand(cardRank);
                 total = total + cardRank;
             }
             //case card value is 10
             else if(cardRank >=8 && cardRank <12)
             {
                 cardRank = 10;
+                //Hand(cardRank);
                 total = total + cardRank;
-            }
-/*            else if(total <22)
-            {
-                cardRank = 11; //needs to be more complex bc it can be 11 or 1
-                total = total + cardRank;
-            }
-            else
-            {
-                cardRank = 1;
-                total = total + cardRank;
-            }
- */           
+            }          
             else
             {
                 aces++;
@@ -97,10 +132,12 @@ public class CardStack : MonoBehaviour
             if(total +11 < 22)
             {
                 total = total + 11;
+                //Hand(11);
             }
             else
             {
                 total = total + 1;
+                //Hand(1);
             }
         }
 
