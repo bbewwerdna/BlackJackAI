@@ -14,8 +14,12 @@ public class GameController : MonoBehaviour
     public Button HitButton;
     public Button StayButton;
     public Button Deal;
-    public int card;
+    public int Dealercard;
+    public int PlayerCard;
+    public int AiCard;
     List<int> DealerHand = new List<int>();
+    List<int> PlayerHand = new List<int>();
+    List<int> AiHand = new List<int>();
 
     public Button Spot1;
     
@@ -61,6 +65,9 @@ public class GameController : MonoBehaviour
         StayButton.interactable = true;
         dealersFirstCard = -1;
         Debug.Log("deck count" + deck.CardCount);
+        DealerHand.Clear();
+        PlayerHand.Clear();
+        AiHand.Clear();
         if(deck.CardCount<15)
         {
             deck.GetComponent<CardStackView>().Clear();
@@ -110,7 +117,9 @@ public class GameController : MonoBehaviour
                 //check to see who is playing and who to deal to
                 if (players[a] == player)
                 {
-                    player.Push(deck.Pop());
+                    PlayerCard = deck.Pop();
+                    player.Push(PlayerCard);
+                    PlayerHand.Add(PlayerCard%13);
                 }
                 else if (players[a] == AI)
                 {
@@ -121,11 +130,6 @@ public class GameController : MonoBehaviour
                     HitDealer();
                 }
             }
-
-            //player.Push(deck.Pop());
-            //AI.Push(deck.Pop());
-            //HitAI();
-            //HitDealer();
         }
         Debug.Log("Dcard1 = " + DealerHand[0]);
         Debug.Log("Dcard2 = " + DealerHand[1]);
@@ -144,17 +148,17 @@ public class GameController : MonoBehaviour
     }
     void HitDealer()
     {
-        card = deck.Pop();
+        Dealercard = deck.Pop();
         if (dealersFirstCard < 0)
         {
-            dealersFirstCard = card;
+            dealersFirstCard = Dealercard;
         }
-        dealer.Push(card);
-        DealerHand.Add(card%13);
+        dealer.Push(Dealercard);
+        DealerHand.Add(Dealercard%13);
         if(dealer.CardCount>=2)
         {
             CardStackView view = dealer.GetComponent<CardStackView>();
-            view.Toggle(card, true);
+            view.Toggle(Dealercard, true);
         }
 
         //Debug.Log("Dcard1 = " + DealerHand[0]);
@@ -196,12 +200,55 @@ public class GameController : MonoBehaviour
 
     void HitAI()
     {
-        AI.Push(deck.Pop());
+        AiCard = deck.Pop();
+        AI.Push(AiCard);
+        AiHand.Add(AiCard%13);
     }
     IEnumerator AiTurn()
     {
         HitButton.interactable = false;
         StayButton.interactable = false;
+        //Going through basic strategy for blackjack
+        //pair in hand
+        if (AiHand[0] == AiHand[1])
+        {
+            for (int a = 2; a < 11; a++)
+            {
+                for (int b = 2; b < 10; b++)
+                {
+                    if(AiHand[0] == b)
+                    {
+
+                    }
+                }
+            }
+        }
+        //hard hand
+        else if (AiHand[0]!=AiHand[1] && ((AiHand[0]!=11 || AiHand[0]!=1) && (AiHand[1]!=11 || AiHand[1]!=1)))
+        {
+            for (int c = 2; c < 11; c++)
+            {
+                if(DealerHand[0] == c)
+                for (int d = 2; d < 18; d++)
+                {
+                    if((d>1 && d<9 || d==12) && ((c>1 && c<4) || (c>6 && c<11)
+                }
+            }
+        }
+        //soft hand
+        else
+        {
+            for (int e = 2; e < 11; e++)
+            {
+                for (int f = 2; f < 18; f++)
+                {
+
+                }
+            }
+        }
+
+        
+
         if(DealerHand[0] == 2 || DealerHand[0] ==3)
         {
             if(AI.HandValue()>12)
@@ -219,19 +266,63 @@ public class GameController : MonoBehaviour
         }
         else if(DealerHand[0] == 4)
         {
-
+            if (AI.HandValue() > 11)
+            {
+                //stay
+            }
+            else if (AI.HandValue() > 1 && AI.HandValue() < 9)
+            {
+                //hit
+            }
+            else
+            {
+                //double
+            }
         }
         else if(DealerHand[0] == 5 || DealerHand[0] == 6)
         {
-
+            if (AI.HandValue() > 11)
+            {
+                //stay
+            }
+            else if (AI.HandValue() > 1 && AI.HandValue() < 8)
+            {
+                //hit
+            }
+            else
+            {
+                //double
+            }
         }
         else if(DealerHand[0] >6 && DealerHand[0]<10)
         {
-
+            if (AI.HandValue() > 16)
+            {
+                //stay
+            }
+            else if (AI.HandValue() > 1 && AI.HandValue() < 10 || AI.HandValue() >11 && AI.HandValue() <17)
+            {
+                //hit
+            }
+            else
+            {
+                //double
+            }
         }
         else
         {
-
+            if (AI.HandValue() > 17)
+            {
+                //stay
+            }
+            else if (AI.HandValue() > 1 && AI.HandValue() < 11 || AI.HandValue() > 11 && AI.HandValue() < 17)
+            {
+                //hit
+            }
+            else
+            {
+                //double
+            }
         }
         yield return new WaitForSeconds(1.5f);
     }
