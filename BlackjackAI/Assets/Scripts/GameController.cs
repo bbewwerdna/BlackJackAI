@@ -34,6 +34,7 @@ public class GameController : MonoBehaviour
     public void Hit()
     {
         player.Push(deck.Pop());
+        //player.Hand()
         if(player.HandValue() > 21)
         {
 
@@ -179,7 +180,7 @@ public class GameController : MonoBehaviour
         yield return new WaitForSeconds(1f);
         if (player.HandValue() < 22)
         {
-            while (dealer.HandValue() < 18)
+            while (dealer.HandValue() < 17)
             {
                 HitDealer();
                 //Debug.Log("dcard"+ dealer.Hand(cop));
@@ -226,28 +227,25 @@ public class GameController : MonoBehaviour
         int hv;
         //Going through basic strategy for blackjack
         //pair in hand
-        if (AiHand[0] == AiHand[1])
-        {
-            for (dc = 2; dc < 12; dc++)
-            {
-                if (DealerHand[0] == dc)
-                {
-                    for (hv = 2; hv < 10; hv++)
-                    {
-                        if (AiHand[0] == hv)
-                        {
 
-                        }
+        for(dc = 2; dc<12; dc++)
+        {
+            if (DealerHand[0] == dc)
+            {
+                //pair
+                for(int aiCount = 0; aiCount<AiHand.Count;aiCount++)
+                {
+                    if(AI.Hand(aiCount) == 11)
+                }
+                if (AiHand[0] == AiHand[1] && AiHand.Count == 2)
+                {
+                    for(hv = 2; hv<10; hv++)
+                    {
+
                     }
                 }
-            }
-        }
-        //hard hand
-        else if (AiHand[0]!=AiHand[1] && ((AiHand[0]!=11 || AiHand[1]!=11)))
-        {
-            for (dc = 2; dc < 12; dc++)
-            {
-                if (DealerHand[0] == dc)
+                //hard hand
+                else if (AiHand[0] != AiHand[1] && ((AiHand[0] != 11 || AiHand[1] != 11)))
                 {
                     for (hv = 5; hv < 21; hv++)
                     {
@@ -269,40 +267,33 @@ public class GameController : MonoBehaviour
                             {
                                 //stay
                             }
-                            else if(AiHand.Count<2)
+                            else if (AiHand.Count < 3)
                             {
                                 //double
                             }
                         }
                     }
                 }
-            }
-        }
-        //soft hand
-        else
-        {
-
-            for (dc = 2; dc < 12; dc++)
-            {
-                if (DealerHand[0] == dc)
+                //soft hand
+                else
                 {
                     for (hv = 13; hv < 21; hv++)
                     {
-                        if(AI.HandValue() == hv)
+                        if (AI.HandValue() == hv)
                         {
-                            if(((dc>1 && dc<4) && hv<17)
-                            || (((dc>6 && dc<9) || dc==11) && hv<18)
-                            || ((dc>8 && dc<11) && hv<19))
+                            if (((dc > 1 && dc < 4) && hv < 17)
+                            || (((dc > 6 && dc < 9) || dc == 11) && hv < 18)
+                            || ((dc > 8 && dc < 11) && hv < 19))
                             {
                                 //hit
                             }
-                            else if ((((dc > 1 && dc < 3) || (dc>6 && dc<9) || dc==11) && hv > 17)
+                            else if ((((dc > 1 && dc < 3) || (dc > 6 && dc < 9) || dc == 11) && hv > 17)
                             || (((dc > 6 && dc < 9) || dc == 11) && hv < 18)
                             || ((dc > 8 && dc < 11) && hv < 19))
                             {
                                 //stay
                             }
-                            else
+                            else if(AiHand.Count<3)
                             {
                                 //double
                             }
