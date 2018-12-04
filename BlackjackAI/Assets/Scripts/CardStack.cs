@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class CardStack : MonoBehaviour
 {
+    int numDecks = 1;
     List<int> cards;
     List<int> cardsss = new List<int>();
 
@@ -62,8 +63,13 @@ public class CardStack : MonoBehaviour
         cardsss.Clear();
         int aces = 0;
         int total = 0;
+        int[] acesindex = new int[4 * numDecks];
+
+        bool[] hasBeenChanged = new bool[4 * numDecks];
+
         foreach (int card in GetCards())
         {
+            //52 cards / 13 = 4 => number of suits of a card per deck
             int cardRank = card % 13;
             //case card value is from 2 - 9
             if (cardRank < 8)
@@ -81,20 +87,30 @@ public class CardStack : MonoBehaviour
             }
             else
             {
+
+                cardRank = 11;
+                hasBeenChanged[aces] = false;
+                cardsss.Add(cardRank);
+                total = total + cardRank;
+                acesindex[aces] = card;
+
                 aces++;
+
+
             }
-        }
-        for (int i = 0; i < aces; i++)
-        {
-            if (total + 11 < 22)
+            //j = card;
+            for (int i = aces; i > 0 && total > 21; i--)
             {
-                total = total + 11;
-                cardsss.Add(11);
-            }
-            else
-            {
-                total = total + 1;
-                cardsss.Add(1);
+               
+                if(hasBeenChanged[i] == false)
+                {
+                    cardsss[acesindex[i]] = 1;
+                    total -= 10;
+                    hasBeenChanged[i] = true;
+                    break; 
+                }
+
+
             }
         }
 
@@ -112,6 +128,7 @@ public class CardStack : MonoBehaviour
             if(cardRank < 8)
             {
                 cardRank += 2;
+               
                 //Hand(cardRank);
                 total = total + cardRank;
             }
@@ -148,7 +165,7 @@ public class CardStack : MonoBehaviour
     public void CreateDeck()
     {
         //int shuffle = 15;
-        for (int i = 0; i < 52; i++)
+        for (int i = 0; i < numDecks*52; i++)
         {
             cards.Add(i);
         }
@@ -164,6 +181,8 @@ public class CardStack : MonoBehaviour
         }
         //CreateDeck();
     }
+    //returns number of decks used in the game
+   
 
     public void Reset()
     {
@@ -178,5 +197,5 @@ public class CardStack : MonoBehaviour
         {
             CreateDeck();
         }
-	}
+    }
 }
