@@ -58,7 +58,7 @@ public class CardStack : MonoBehaviour
             CardAdded(this, new CardEventArgs(card));
         }
     }
-    public int Hand(int pos)
+    public List<int> Hand()
     {
         cardsss.Clear();
         int aces = 0;
@@ -87,34 +87,28 @@ public class CardStack : MonoBehaviour
             }
             else
             {
-
                 cardRank = 11;
                 hasBeenChanged[aces] = false;
                 cardsss.Add(cardRank);
                 total = total + cardRank;
                 acesindex[aces] = card;
-
+          
                 aces++;
-
-
             }
             //j = card;
             for (int i = aces; i > 0 && total > 21; i--)
-            {
-               
+            {               
                 if(hasBeenChanged[i] == false)
                 {
                     cardsss[acesindex[i]] = 1;
                     total -= 10;
                     hasBeenChanged[i] = true;
-                    break; 
+                   // break; 
                 }
-
-
             }
         }
 
-        return cardsss[pos];
+        return cardsss;
     }
     public int HandValue()
     {
