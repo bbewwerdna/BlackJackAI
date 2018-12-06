@@ -13,6 +13,14 @@ public class GameController : MonoBehaviour
     public int currcount = 0;
     public int trueCount = 0;
     public int error = 0;
+    public int aiMoney=100;
+    public int playerMoney=100;
+    public int aibet;
+    public int playerbet = 0;
+    //allow player to bet before cards are delt
+    public int track=0;
+    int totalbet = 0;
+
 
     public CardStack player;
     public CardStack dealer;
@@ -23,6 +31,7 @@ public class GameController : MonoBehaviour
     public Button StayButton;
     public Button Deal;
     public Button ShowCount;
+    public Button bet;
 
 
     List<int> DealerHand = new List<int>();
@@ -39,6 +48,11 @@ public class GameController : MonoBehaviour
     public Text playerBet;
     public Text AIBet;
     public Text countDisplay;
+    public Text playerHandValue;
+    public Text aiHandValue;
+    public Text NoMoney;
+    public Text playerTotal;
+    public Text aiTotal;
 
     int[,] hardMatrix = new int[,] {      { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
                                           { 0, 0, 0, 1, 1, 0, 0, 0, 0, 0 },
@@ -77,7 +91,20 @@ public class GameController : MonoBehaviour
 
 
 
+    public void playerBetting()
+    {
 
+        if (playerMoney > 0)
+        {
+            playerbet++;
+            playerMoney--;
+            playerBet.text = "" + playerbet;
+            //bet.interactable = false;
+            Deal.interactable = true;
+        }
+
+        //StartGame();
+    }
 
 
 
@@ -85,12 +112,11 @@ public class GameController : MonoBehaviour
     {
         PlayerCard = deck.Pop();
         player.Push(PlayerCard);
-        PlayerHand.Add(PlayerCard % 13 + 2);
         UpdateCount(PlayerCard);
         //player.Hand()
         if (player.HandValue() == 21)
         {
-            winText.text = "Blackjack!";
+            //winText.text = "Blackjack!";
             HitButton.interactable = false;
             StayButton.interactable = false;
             if (players.Count < 3)
@@ -112,6 +138,7 @@ public class GameController : MonoBehaviour
             StartCoroutine(AiTurn(AI));
             
         }
+        playerHandValue.text = "" + player.HandValue();
     }
 
     //called when you press 'STAY'
@@ -125,6 +152,7 @@ public class GameController : MonoBehaviour
     //check if dealer's hand is 21 before player can hit
     public void DealAgain()
     {
+        bet.interactable = false;
         Deal.interactable = false;
         CountDealerFlippedCard = false;
         player.GetComponent<CardStackView>().Clear();
@@ -171,51 +199,76 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
-
+        playerMoney = 100;
+        aiMoney = 100;
         currcount = 0;
         players.Add(player);
         players.Add(AI);
         players.Add(dealer);
-        StartGame();
+        //StartGame();
     }
 
 
     void StartGame()
-    { 
+    {
+        track = 0;
+        bet.interactable = false;
         HitButton.interactable = false;
         StayButton.interactable = false;
         winText.text = "";
         aiText.text = "";
+
+
         // sit.text = "sit";
         int numPlayers = players.Count;
-
-        // call betting method for ai bet
-
-        for (int i = 0; i < 2; i++)
+        if (track == 0)
         {
-            for (int a = 0; a < numPlayers; a++)
-            {
-                //check to see who is playing and who to deal to
-                if (players[a] == player)
-                {
-                    PlayerCard = deck.Pop();
-                    UpdateCount(PlayerCard);
-                    player.Push(PlayerCard);
-                    PlayerHand.Add(PlayerCard % 13 + 2);
+            Betting();
+            track = 1;
+        }
+        // call betting method for ai bet
+        aiTotal.text = "Money: " + aiMoney;
+        playerTotal.text = "Money: " + playerMoney;
+        if (track==1)
+        {
 
-                }
-                else if (players[a] == AI)
+
+            for (int i = 0; i < 2; i++)
+            {
+                for (int a = 0; a < numPlayers; a++)
                 {
-                    HitAI();
-                    Debug.Log("first value: " + AI.HandValue());
-                }
-                else
-                {
-                    HitDealer();
+                    if (playerMoney > 0 && aiMoney > 0)
+                    {
+                        //check to see who is playing and who to deal to
+                        if (players[a] == player)
+                        {
+                            PlayerCard = deck.Pop();
+                            UpdateCount(PlayerCard);
+                            player.Push(PlayerCard);
+                            PlayerHand.Add(PlayerCard % 13 + 2);
+
+                        }
+                        else if (players[a] == AI)
+                        {
+                            HitAI();
+                        }
+                        else
+                        {
+                            HitDealer();
+
+                        }
+                    }
+                    else
+                    {
+                        NoMoney.text = "Players have no money to play!";
+                        break;
+                    }
                 }
             }
         }
-        if(player.HandValue()==21 && AI.HandValue() == 21)
+        playerHandValue.text = "" + player.HandValue();
+        aiHandValue.text = "" + AI.HandValue();
+        if (player.HandValue()==21 && AI.HandValue() == 21)
         {
             HitButton.interactable = false;
             StayButton.interactable = false;
@@ -234,6 +287,7 @@ public class GameController : MonoBehaviour
             StayButton.interactable = true;
         }
 
+
         // if (players.Count == 2)
         // {
         //    StartCoroutine(AiTurn());
@@ -245,10 +299,25 @@ public class GameController : MonoBehaviour
 
     }
 
-    /*public void Betting()
+    public void Betting()
     {
-
-    }*/
+        if(currcount>3)
+        {
+            if (aiMoney > 10)
+            {
+                aibet = 10;
+                aiMoney = aiMoney - aibet;
+                AIBet.text = "" + aibet;
+            }
+        }
+        else
+        {
+            aibet =  1;
+            aiMoney = aiMoney - aibet;
+            AIBet.text = "" + aibet;
+        }
+        //text of bet
+    }
 
     void HitDealer()
     {
@@ -279,15 +348,8 @@ public class GameController : MonoBehaviour
     {
         //makes card normal deck number
         newcard = newcard % 13;
-        if(newcard<8)
-        {
-
-        }
-
-
-
         //if card is a 7,8, or 9, there is no update to card count
-        if (newcard == 7 || newcard == 8 || newcard == 9)
+        if (newcard == 5 || newcard == 6 || newcard == 7)
         {
             return;
         }
@@ -296,7 +358,12 @@ public class GameController : MonoBehaviour
         //adjust true count accordingly 
         switch (newcard)
         {
-            case 1:
+
+            case 8:
+                currcount -= 1;
+                trueCount += currcount / numDecks;
+                break;
+            case 9:
                 currcount -= 1;
                 trueCount += currcount / numDecks;
                 break;
@@ -309,10 +376,6 @@ public class GameController : MonoBehaviour
                 trueCount += currcount / numDecks;
                 break;
             case 12:
-                currcount -= 1;
-                trueCount += currcount / numDecks;
-                break;
-            case 13:
                 currcount -= 1;
                 trueCount += currcount / numDecks;
                 break;
@@ -369,10 +432,18 @@ public class GameController : MonoBehaviour
         if (player.HandValue() > 21 || dealer.HandValue() > player.HandValue() && dealer.HandValue() < 22)
         {
             winText.text = "You lose";
+
+            playerTotal.text = "Money: " + playerMoney;
+            playerBet.text = "";
+            playerbet = 0;
         }
         else if (dealer.HandValue() > 21 || player.HandValue() < 22 && player.HandValue() > dealer.HandValue())
         {
             winText.text = "You win";
+            playerMoney = playerMoney + playerbet*2;
+            playerTotal.text = "Money: " + playerMoney;
+            playerBet.text = "";
+            playerbet = 0;
         }
         else
         {
@@ -381,17 +452,23 @@ public class GameController : MonoBehaviour
         if (AI.HandValue() > 21 || dealer.HandValue() > AI.HandValue() && dealer.HandValue() < 22)
         {
             aiText.text = "You lose";
+
+            aiTotal.text = "Money: " + aiMoney;
+            AIBet.text = "";
         }
         else if (dealer.HandValue() > 21 || AI.HandValue() < 22 && AI.HandValue() > dealer.HandValue())
         {
             aiText.text = "You win";
+            aiMoney = aiMoney + aibet*2;
+            aiTotal.text = "Money: " + aiMoney;
+            AIBet.text = "";
         }
         else
         {
             aiText.text = "Push";
         }
         yield return new WaitForSeconds(1f);
-        Deal.interactable = true;
+        bet.interactable = true;
     }
 
     public CardStack getDeck()
@@ -405,6 +482,7 @@ public class GameController : MonoBehaviour
         AI.Push(AiCard);
         AiHand.Add(AiCard);
         UpdateCount(AiCard);
+        aiHandValue.text = "" + AI.HandValue();
 
     }
 
@@ -441,10 +519,12 @@ public class GameController : MonoBehaviour
         int dindex = dealer.Hand()[1] - 2;
         int aindex = 0;
         int graphvalue = 0;
+        aiHandValue.text = "" + AI.HandValue();
         //Going through basic strategy for blackjack
         //pair in hand
         if (curAI.HandValue() == 21)
         {
+            //
             if (aiHandCount > 1)
             {
                 StartCoroutine(AiTurn(AI2));
@@ -457,6 +537,7 @@ public class GameController : MonoBehaviour
         }
         else if (curAI.HandValue() > 21)
         {
+            //aiHandValue.text = "" + AI.HandValue();
             if (aiHandCount > 1)
             {
                 StartCoroutine(AiTurn(AI2));
@@ -468,9 +549,11 @@ public class GameController : MonoBehaviour
         }
         else
         {
+            //aiHandValue.text = "" + AI.HandValue();
             //hard hand
             if ((curAI.Hand()[0] != curAI.Hand()[1]) && !curAI.Hand().Contains(11))
             {
+
                 if (curAI.HandValue() < 8)
                 {
                     aindex = 0;
@@ -485,6 +568,10 @@ public class GameController : MonoBehaviour
                     else if (graphvalue == 1)
                     {
                         //double
+                        HitAI();
+                        aibet += aibet;
+                        AIBet.text = "" + aibet;
+                        StartCoroutine(DealersTurn());
                     }
                     else
                     {
@@ -512,6 +599,10 @@ public class GameController : MonoBehaviour
                     else if (graphvalue == 1)
                     {
                         //double
+                        HitAI();
+                        aibet += aibet;
+                        AIBet.text = "" + aibet;
+                        StartCoroutine(DealersTurn());
                     }
                     else
                     {
@@ -538,6 +629,10 @@ public class GameController : MonoBehaviour
                     else if (graphvalue == 1)
                     {
                         //double
+                        HitAI();
+                        aibet += aibet;
+                        AIBet.text = "" + aibet;
+                        StartCoroutine(DealersTurn());
                     }
                     else
                     {
@@ -696,6 +791,10 @@ public class GameController : MonoBehaviour
                     else if (graphvalue == 1)
                     {
                         //double
+                        HitAI();
+                        aibet += aibet;
+                        AIBet.text = "" + aibet;
+                        StartCoroutine(DealersTurn());
                     }
                     else
                     {
@@ -722,6 +821,10 @@ public class GameController : MonoBehaviour
                     else if (graphvalue == 1)
                     {
                         //double
+                        HitAI();
+                        aibet += aibet;
+                        AIBet.text = "" + aibet;
+                        StartCoroutine(DealersTurn());
                     }
                     else
                     {
