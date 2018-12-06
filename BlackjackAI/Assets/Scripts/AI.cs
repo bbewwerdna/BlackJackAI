@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AI : MonoBehaviour {
+public class AI : CardStackView {
 
-    public CardStack player;
-    public CardStack dealer;
-    public CardStack deck;
-    public CardStack AIplayer;
+    //public static CardStack player = GameController.player;
+    //public static CardStack dealerHand = GameController.dealer;
+    //public static CardStack deck;
+    //public static CardStack AIplayer;
 
+        /*
     public int Dealercard;
     public int PlayerCard;
     public int AiCard;
@@ -17,15 +18,17 @@ public class AI : MonoBehaviour {
     List<int> PlayerHand = new List<int>();
     List<int> AiHand = new List<int>();
 
-    public void Start()
+    public void Reee()
     {
         //DealerHand = dealer.Hand();
         //AiHand = AIplayer.Hand();
         //AiTurn();
     }
 
-    void HitAI()
+    public void HitAI()
     {
+
+
         AiCard = deck.Pop();
         AIplayer.Push(AiCard);
         //AiHand.Add(AiCard % 13 + 2);
@@ -117,4 +120,5 @@ public class AI : MonoBehaviour {
         }
         yield return new WaitForSeconds(1.5f);
     }
+    */
 }

@@ -31,6 +31,7 @@ public class CardStack : MonoBehaviour
             }
         }
     }
+    // gets every card that is added to the list 
     public IEnumerable<int> GetCards()
     {
         foreach (int i in cards)
@@ -41,6 +42,7 @@ public class CardStack : MonoBehaviour
 
     public int Pop()
     {
+        Debug.Log("cards size: " + cards.Count);
         int temp = cards[0];
         cards.RemoveAt(0);
         if(CardRemoved != null)
@@ -58,6 +60,8 @@ public class CardStack : MonoBehaviour
             CardAdded(this, new CardEventArgs(card));
         }
     }
+
+
     public List<int> Hand()
     {
         cardsss.Clear();
@@ -110,6 +114,8 @@ public class CardStack : MonoBehaviour
 
         return cardsss;
     }
+
+    //returns the sum of all of the values of the cards in your hands
     public int HandValue()
     {
         //cardsss.Clear();

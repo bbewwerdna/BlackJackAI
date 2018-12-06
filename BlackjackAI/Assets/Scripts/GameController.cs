@@ -11,6 +11,7 @@ public class GameController : MonoBehaviour
     public CardStack dealer;
     public CardStack deck;
     public CardStack AI;
+    //public static AI ai;
     public Button HitButton;
     public Button StayButton;
     public Button Deal;
@@ -19,7 +20,7 @@ public class GameController : MonoBehaviour
     public int PlayerCard;
     public int AiCard;
     List<int> DealerHand = new List<int>();
-    
+
     List<int> PlayerHand = new List<int>();
     List<int> AiHand = new List<int>();
     public bool CountDealerFlippedCard = false;
@@ -40,12 +41,19 @@ public class GameController : MonoBehaviour
     //public AI ai;
     //public bool button = true;
 
-    List<CardStack> players = new List<CardStack>();
+    public static List<CardStack> players = new List<CardStack>();
+
+    //state 0: players turn
+    //state 1: AI's turn
+    //state 2: dealers turn
+    public static int state;
 
     //public List<int> handList()
     //{
     //    return DealerHand;
     //}
+
+    
 
     public void Hit()
     {
@@ -76,18 +84,21 @@ public class GameController : MonoBehaviour
             HitButton.interactable = false;
             StayButton.interactable = false;
             StartCoroutine(DealersTurn());
-            //StartCoroutine(AiTurn());
-            //AI.GetComponent<AI>().AiTurn();
+            StartCoroutine(AiTurn());
+            
         }
     }
+
+    //called when you press 'STAY'
     public void Stick()
     {
         HitButton.interactable = false;
         StayButton.interactable = false;
         // dealer actions
         StartCoroutine(DealersTurn());
-        //StartCoroutine(AiTurn());
+        StartCoroutine(AiTurn());
     }
+
     //check if dealer's hand is 21 before player can hit
     public void DealAgain()
     {
@@ -108,7 +119,7 @@ public class GameController : MonoBehaviour
         PlayerHand.Clear();
         //Dealercard = 0;
         // PlayerCard = 0; 
-         AiHand.Clear();
+        AiHand.Clear();
         if (deck.CardCount < 15 * numDecks)
         {
             deck.GetComponent<CardStackView>().Clear();
@@ -141,11 +152,12 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
+        //ai = new AI();
         winText.text = "Welcome to Blackjack!";
 
         currcount = 0;
         players.Add(player);
-        // players.Add(AI);
+        players.Add(AI);
         players.Add(dealer);
         StartGame();
     }
@@ -172,17 +184,20 @@ public class GameController : MonoBehaviour
                     PlayerHand.Add(PlayerCard % 13 + 2);
 
                 }
-                //  else if (players[a] == AI)
-                // {
-                //     HitAI();
-                //  }
+                else if (players[a] == AI)
+                {
+                    HitAI();
+                }
                 else
                 {
                     HitDealer();
                 }
             }
+
+
+
         }
-        
+
 
         Debug.Log("dealer card" + dealer.HandValue());
         // if (players.Count == 2)
@@ -275,8 +290,8 @@ public class GameController : MonoBehaviour
     public void ShowCountButton()
     {
         showCountText.text = "Show Count";
-        ShowCount.enabled = false; 
-        if(ShowCount.enabled == false)
+        ShowCount.enabled = false;
+        if (ShowCount.enabled == false)
         {
             showCountText.text = "Hide Count";
             ShowCount.enabled = true;
@@ -286,7 +301,25 @@ public class GameController : MonoBehaviour
 
     public void Update()
     {
+
         showCountText.text = "" + currcount;
+
+        switch (state)
+        {
+
+            case -1:
+                break;
+            //Players turn 
+            case 1:
+                break;
+            //AI's turn
+            case 2:
+                break;
+            //Dealers turn
+            case 3:
+                break;
+
+        }
     }
     public IEnumerator DealersTurn()
     {
@@ -332,16 +365,25 @@ public class GameController : MonoBehaviour
         Deal.interactable = true;
     }
 
-    //void HitAI()
-    //{
-    //    AiCard = deck.Pop();
-    //    AI.Push(AiCard);
-    //    AiHand.Add(AiCard % 13 + 2);
-    //    UpdateCount(AiCard);
+    public CardStack getDeck()
+    {
+        return deck;
+    }
 
-    //}
+    void HitAI()
+    {
+        AiCard = deck.Pop();
+        AI.Push(AiCard);
+        AiHand.Add(AiCard % 13 + 2);
+        UpdateCount(AiCard);
 
-    /*
+    }
+
+    public bool isInHand()
+    {
+        for(int g =0; g<AiHand.Count; g++)
+    }
+
 
     IEnumerator AiTurn()
     {
@@ -355,123 +397,123 @@ public class GameController : MonoBehaviour
 
         for (dc = 2; dc < 12; dc++)
         {
-            if (DealerHand[0] == dc)
+            if (DealerHand[1] == dc)
             {
                 //pair
                 for (int aiCount = 0; aiCount < AiHand.Count; aiCount++)
                 {
                     //if (AI.Hand(aiCount) == 11)
-                }
-                if (AiHand[0] == AiHand[1] && AiHand.Count == 2)
-                {
-                    for (hv = 2; hv < 10; hv++)
+                    if (AiHand[0] == AiHand[1] && AiHand.Count == 2)
                     {
-
-                    }
-                }
-                //hard hand
-                else if (AiHand[0] != AiHand[1] && ((AiHand[0] != 11 || AiHand[1] != 11)))
-                {
-                    for (hv = 5; hv < 21; hv++)
-                    {
-                        if (AI.HandValue() == hv)
+                        for (hv = 2; hv < 10; hv++)
                         {
-                            if ((((hv > 1 && hv < 9) || hv == 12) && (dc > 1 && dc < 4))
-                            || ((hv > 1 && hv < 9) && dc == 4)
-                            || ((hv > 1 && hv < 8) && (dc > 4 && dc < 7))
-                            || (((hv > 1 && hv < 10) || (hv > 11 && hv < 17)) && (dc > 6 && dc < 10))
-                            || (((hv > 1 && hv < 11) || (hv > 11 && hv < 17)) && (dc > 9 && dc < 12)))
-                            {
 
-                                //hit
-                                //hv =5
-                            }
-                            else if ((hv > 12 && (dc > 1 && dc < 4))
-                            || (hv > 11 && (dc > 3 && dc < 7))
-                            || (hv > 17 && (dc > 6 && dc < 11)))
+                        }
+                    }
+                    //hard hand
+                    else if (AiHand[0] != AiHand[1] && AiHand[aiCount]!=11)
+                    {
+                        for (hv = 5; hv < 21; hv++)
+                        {
+                            if (AI.HandValue() == hv)
                             {
-                                //stay
+                                if ((((hv > 1 && hv < 9) || hv == 12) && (dc > 1 && dc < 4))
+                                || ((hv > 1 && hv < 9) && dc == 4)
+                                || ((hv > 1 && hv < 8) && (dc > 4 && dc < 7))
+                                || (((hv > 1 && hv < 10) || (hv > 11 && hv < 17)) && (dc > 6 && dc < 10))
+                                || (((hv > 1 && hv < 11) || (hv > 11 && hv < 17)) && (dc > 9 && dc < 12)))
+                                {
+                                    HitAI();
+                                }
+                                else if ((hv > 12 && (dc > 1 && dc < 4))
+                                || (hv > 11 && (dc > 3 && dc < 7))
+                                || (hv > 17 && (dc > 6 && dc < 11)))
+                                {
+                                    //stay
+                                }
+                                else if (AiHand.Count < 3)
+                                {
+                                    //double
+                                }
                             }
-                            else if (AiHand.Count < 3)
+                        }
+                    }
+                    //soft hand
+                    else
+                    {
+                        for (hv = 13; hv < 21; hv++)
+                        {
+                            if (AI.HandValue() == hv)
                             {
-                                //double
+                                if (((dc > 1 && dc < 4) && hv < 17)
+                                || (((dc > 6 && dc < 9) || dc == 11) && hv < 18)
+                                || ((dc > 8 && dc < 11) && hv < 19))
+                                {
+                                    //hit
+                                }
+                                else if ((((dc > 1 && dc < 3) || (dc > 6 && dc < 9) || dc == 11) && hv > 17)
+                                || (((dc > 6 && dc < 9) || dc == 11) && hv < 18)
+                                || ((dc > 8 && dc < 11) && hv < 19))
+                                {
+                                    //stay
+                                }
+                                else if (AiHand.Count < 3)
+                                {
+                                    //double
+                                }
                             }
                         }
                     }
                 }
-                //soft hand
-                else
-                {
-                    for (hv = 13; hv < 21; hv++)
-                    {
-                        if (AI.HandValue() == hv)
-                        {
-                            if (((dc > 1 && dc < 4) && hv < 17)
-                            || (((dc > 6 && dc < 9) || dc == 11) && hv < 18)
-                            || ((dc > 8 && dc < 11) && hv < 19))
-                            {
-                                //hit
-                            }
-                            else if ((((dc > 1 && dc < 3) || (dc > 6 && dc < 9) || dc == 11) && hv > 17)
-                            || (((dc > 6 && dc < 9) || dc == 11) && hv < 18)
-                            || ((dc > 8 && dc < 11) && hv < 19))
-                            {
-                                //stay
-                            }
-                            else if (AiHand.Count < 3)
-                            {
-                                //double
-                            }
-                        }
-                    }
-                }
+
             }
         }
         yield return new WaitForSeconds(1.5f);
     }
-    */
 
-    public int refernceTable()
+
+    /*
+public int refernceTable()
+{
+    int stand = 1;
+    int split = 2;
+    //int double = 3;
+    //int check = 4; 
+    int betAction = 0;
+    // bool ;
+    int[] action = { 1, 1, 2, 2, 3, 1, 1, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1 };
+    int[] AIhandtot = { 16, 15, 20, 20, 10, 12, 12, 11, 9, 10, 9, 16, 13, 12, 12, 12, 13 };
+    int[] AIPerceptDealer = { 10, 10, 5, 6, 10, 3, 2, 1, 2, 1, 7, 9, 2, 4, 5, 6, 3 };
+    int[] indexCC = { 0, 4, 5, 4, 4, 2, 3, 1, 1, 4, 3, 5, -1, 0, -2, -1, -2 };
+
+
+
+    for (int i = 0; i < 17; i++)
     {
-        int stand = 1;
-        int split = 2;
-        //int double = 3;
-        //int check = 4; 
-        int betAction = 0;
-        // bool ;
-        int[] action = { 1, 1, 2, 2, 3, 1, 1, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1 };
-        int[] AIhandtot = { 16, 15, 20, 20, 10, 12, 12, 11, 9, 10, 9, 16, 13, 12, 12, 12, 13 };
-        int[] AIPerceptDealer = { 10, 10, 5, 6, 10, 3, 2, 1, 2, 1, 7, 9, 2, 4, 5, 6, 3 };
-        int[] indexCC = { 0, 4, 5, 4, 4, 2, 3, 1, 1, 4, 3, 5, -1, 0, -2, -1, -2 };
-
-
-
-        for (int i = 0; i < 17; i++)
+        if (dealer.HandValue() == AIPerceptDealer[i] && ai.HandValue() == AIhandtot[i])
         {
-            if (dealer.HandValue() == AIPerceptDealer[i] && AI.HandValue() == AIhandtot[i])
+
+            if (currcount >= indexCC[i])
             {
 
-                if (currcount >= indexCC[i])
-                {
-
-                    betAction = action[i];
-                }
-
-
+                betAction = action[i];
             }
+
+
         }
-        if (AiHand[0] == AiHand[1])
-        {
-            if ((DealerHand[0] == 5 && currcount == 5) || (DealerHand[0] == 6 && currcount == 4))
-                betAction = 2;
-            else
-                betAction = 1;
-        }
-        return betAction;
-
-
-
     }
+    if (AiHand[0] == AiHand[1])
+    {
+        if ((DealerHand[0] == 5 && currcount == 5) || (DealerHand[0] == 6 && currcount == 4))
+            betAction = 2;
+        else
+            betAction = 1;
+    }
+    return betAction;
+
+
+
+}
 }
 //implementaion of Illustrious 18 (only 17 shown) 
 //Decides if the AI should hit, stay, double down, or split based off of the true count, 
@@ -479,3 +521,5 @@ public class GameController : MonoBehaviour
 //if the AI has certain total card value (AIhandtot) and dealer has certain card value (AIPerceptDealer) 
 //and the true cound is equal to or greater than the index value (indexCC), then the AI should follow the action,
 // otherwise, the AI should hit. 
+*/
+}

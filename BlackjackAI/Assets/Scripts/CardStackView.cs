@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(CardStack))]
-public class CardStackView : MonoBehaviour 
+public class CardStackView : CardStack 
 {
     CardStack deck;
     Dictionary<int, CardView> fetchedCards;
