@@ -189,6 +189,7 @@ public class GameController : MonoBehaviour
         // sit.text = "sit";
         int numPlayers = players.Count;
 
+        // call betting method for ai bet
 
         for (int i = 0; i < 2; i++)
         {
@@ -243,6 +244,11 @@ public class GameController : MonoBehaviour
         // }
 
     }
+
+    /*public void Betting()
+    {
+
+    }*/
 
     void HitDealer()
     {
