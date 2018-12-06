@@ -30,6 +30,42 @@ public class GameController : MonoBehaviour
     public Text showCountText;
     //public bool button = true;
 
+    // int[,] hardMatrix = new int[11, 10];
+    //int[,] softMatrix = new int[8, 10];
+    //int[,] pairMatrix = new int[8, 10];
+
+    int[,] hardMatrix = new int[,] {      { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                                          { 0, 0, 0, 1, 1, 0, 0, 0, 0, 0 },
+                                          { 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 },
+                                          { 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 },
+                                          { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+                                          { 0, 0, 2, 2, 2, 0, 0, 0, 0, 0 },
+                                          { 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+                                          { 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+                                          { 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+                                          { 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+                                          { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 } };
+
+    int[,] softMatrix = new int[,]{       { 0,0,1,1,1,0,0,0,0,0 },
+                                          { 0,0,1,1,1,0,0,0,0,0 },
+                                          { 0,0,1,1,1,0,0,0,0,0},
+                                          { 0,0,1,1,1,0,0,0,0,0},
+                                          { 1,1,1,1,1,0,0,0,0,0},
+                                          { 2,1,1,1,1,2,2,0,0,2},
+                                          { 2,2,2,2,1,2,2,2,2,2},
+                                          { 2,2,2,2,2,2,2,2,2,2}};
+
+    int[,] pairMatrix = new int[,] {         {1,1,1,1,1,1,0,0,0,0 },
+                                          {1,1,1,1,1,1,1,0,0,0},
+                                          { 0,0,1,1,1,0,0,0,0,0},
+                                          { 1,1,1,1,1,1,0,0,0,0},
+                                          { 1,1,1,1,1,1,1,0,2,0},
+                                          { 1,1,1,1,1,1,1,1,1,1},
+                                          { 1,1,1,1,1,2,1,1,0,0},
+                                          { 1,1,1,1,1,1,1,1,1,1} };
+
+
+
 
     public int currcount = 0;
     public int trueCount = 0;
@@ -53,7 +89,20 @@ public class GameController : MonoBehaviour
     //    return DealerHand;
     //}
 
-    
+    public void CreateMatrix(int height, int length, int[,] matrix, List<int> list)
+    { 
+        int tmpi = 0;
+        for(int i = 0; i < height-1; i ++)
+        {
+            for(int j = 0; j < length-1; j++)
+            {
+                matrix[i,j] = list[tmpi];
+                tmpi++;
+            }
+        }
+        Debug.Log(matrix[1,6]);
+    }
+
 
     public void Hit()
     {
@@ -71,10 +120,10 @@ public class GameController : MonoBehaviour
             {
                 DealAgain();
             }
-            // else
-            // {
-            //StartCoroutine(AITurn());
-            // }
+            else
+            {
+                StartCoroutine(AiTurn(AI));
+            }
 
         }
         if (player.HandValue() > 21)
@@ -83,8 +132,8 @@ public class GameController : MonoBehaviour
             //player bust
             HitButton.interactable = false;
             StayButton.interactable = false;
-            StartCoroutine(DealersTurn());
-            StartCoroutine(AiTurn());
+            //StartCoroutine(DealersTurn());
+            StartCoroutine(AiTurn(AI));
             
         }
     }
@@ -95,8 +144,8 @@ public class GameController : MonoBehaviour
         HitButton.interactable = false;
         StayButton.interactable = false;
         // dealer actions
-        StartCoroutine(DealersTurn());
-        StartCoroutine(AiTurn());
+        //StartCoroutine(DealersTurn());
+        StartCoroutine(AiTurn(AI));
     }
 
     //check if dealer's hand is 21 before player can hit
@@ -117,6 +166,7 @@ public class GameController : MonoBehaviour
         //Debug.Log("deck count" + deck.CardCount);
         DealerHand.Clear();
         PlayerHand.Clear();
+
         //Dealercard = 0;
         // PlayerCard = 0; 
         AiHand.Clear();
@@ -152,9 +202,11 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
+        //Debug.Log(matrix1[15]);
         //ai = new AI();
+        //CreateMatrix(11, 10, hardMatrix, matrix1);
         winText.text = "Welcome to Blackjack!";
-
+       //int gg = player.Hand()[0];
         currcount = 0;
         players.Add(player);
         players.Add(AI);
@@ -187,6 +239,7 @@ public class GameController : MonoBehaviour
                 else if (players[a] == AI)
                 {
                     HitAI();
+                    Debug.Log("first value: " + AI.HandValue());
                 }
                 else
                 {
@@ -304,22 +357,6 @@ public class GameController : MonoBehaviour
 
         showCountText.text = "" + currcount;
 
-        switch (state)
-        {
-
-            case -1:
-                break;
-            //Players turn 
-            case 1:
-                break;
-            //AI's turn
-            case 2:
-                break;
-            //Dealers turn
-            case 3:
-                break;
-
-        }
     }
     public IEnumerator DealersTurn()
     {
@@ -381,97 +418,339 @@ public class GameController : MonoBehaviour
 
     public bool isInHand()
     {
+        bool acein = false;
         for(int g =0; g<AiHand.Count; g++)
+        {
+            if(AiHand[g]== 11)
+            {
+                acein = true;
+                return acein;
+            }
+            else
+            {
+                acein = false;  
+                return acein;
+            }
+        }
+        return acein;
     }
 
+    public int aiHandCount;
+    public CardStack AI2;
 
-    IEnumerator AiTurn()
+    IEnumerator AiTurn(CardStack bleh)
     {
-
+        yield return new WaitForSeconds(1.5f);
+        CardStack curAI = bleh;
+        Debug.Log("s = " + curAI.HandValue());
+        aiHandCount = 0;
         HitButton.interactable = false;
         StayButton.interactable = false;
+        int temp;
         int dc;
         int hv;
+        int dindex = dealer.Hand()[1] - 2;
+        int aindex = 0;
+        int graphvalue = 0;
         //Going through basic strategy for blackjack
         //pair in hand
-
-        for (dc = 2; dc < 12; dc++)
+        if (curAI.HandValue() == 21)
         {
-            if (DealerHand[1] == dc)
+            if (aiHandCount > 1)
             {
-                //pair
-                for (int aiCount = 0; aiCount < AiHand.Count; aiCount++)
-                {
-                    //if (AI.Hand(aiCount) == 11)
-                    if (AiHand[0] == AiHand[1] && AiHand.Count == 2)
-                    {
-                        for (hv = 2; hv < 10; hv++)
-                        {
+                StartCoroutine(AiTurn(AI2));
+            }
+            else
+            {
+                StartCoroutine(DealersTurn());
+            }
 
-                        }
-                    }
-                    //hard hand
-                    else if (AiHand[0] != AiHand[1] && AiHand[aiCount]!=11)
+        }
+        else if (curAI.HandValue() > 21)
+        {
+            if (aiHandCount > 1)
+            {
+                StartCoroutine(AiTurn(AI2));
+            }
+            else
+            {
+                StartCoroutine(DealersTurn());
+            }
+        }
+        else
+        {
+            //hard hand
+            if ((curAI.Hand()[0] != curAI.Hand()[1]) && !isInHand())
+            {
+                if (curAI.HandValue() < 8)
+                {
+                    aindex = 0;
+                    graphvalue = hardMatrix[aindex, dindex];
+                    if (graphvalue == 0)
                     {
-                        for (hv = 5; hv < 21; hv++)
-                        {
-                            if (AI.HandValue() == hv)
-                            {
-                                if ((((hv > 1 && hv < 9) || hv == 12) && (dc > 1 && dc < 4))
-                                || ((hv > 1 && hv < 9) && dc == 4)
-                                || ((hv > 1 && hv < 8) && (dc > 4 && dc < 7))
-                                || (((hv > 1 && hv < 10) || (hv > 11 && hv < 17)) && (dc > 6 && dc < 10))
-                                || (((hv > 1 && hv < 11) || (hv > 11 && hv < 17)) && (dc > 9 && dc < 12)))
-                                {
-                                    HitAI();
-                                }
-                                else if ((hv > 12 && (dc > 1 && dc < 4))
-                                || (hv > 11 && (dc > 3 && dc < 7))
-                                || (hv > 17 && (dc > 6 && dc < 11)))
-                                {
-                                    //stay
-                                }
-                                else if (AiHand.Count < 3)
-                                {
-                                    //double
-                                }
-                            }
-                        }
+
+                        HitAI();
+                        StartCoroutine(AiTurn(curAI));
+                        //yield return new WaitForSeconds(1.5f);
                     }
-                    //soft hand
+                    else if (graphvalue == 1)
+                    {
+                        //double
+                    }
                     else
                     {
-                        for (hv = 13; hv < 21; hv++)
+                        if (aiHandCount > 1)
                         {
-                            if (AI.HandValue() == hv)
-                            {
-                                if (((dc > 1 && dc < 4) && hv < 17)
-                                || (((dc > 6 && dc < 9) || dc == 11) && hv < 18)
-                                || ((dc > 8 && dc < 11) && hv < 19))
-                                {
-                                    //hit
-                                }
-                                else if ((((dc > 1 && dc < 3) || (dc > 6 && dc < 9) || dc == 11) && hv > 17)
-                                || (((dc > 6 && dc < 9) || dc == 11) && hv < 18)
-                                || ((dc > 8 && dc < 11) && hv < 19))
-                                {
-                                    //stay
-                                }
-                                else if (AiHand.Count < 3)
-                                {
-                                    //double
-                                }
-                            }
+                            StartCoroutine(AiTurn(AI2));
+                        }
+                        else
+                        {
+                            StartCoroutine(DealersTurn());
+                        }
+
+                    }
+                }
+                else if (curAI.HandValue() > 16)
+                {
+                    aindex = 10;
+                    graphvalue = hardMatrix[aindex, dindex];
+                    if (graphvalue == 0)
+                    {
+                        HitAI();
+                        StartCoroutine(AiTurn(curAI));
+                        //yield return new WaitForSeconds(1.5f);
+                    }
+                    else if (graphvalue == 1)
+                    {
+                        //double
+                    }
+                    else
+                    {
+                        if (aiHandCount > 1)
+                        {
+                            StartCoroutine(AiTurn(AI2));
+                        }
+                        else
+                        {
+                            StartCoroutine(DealersTurn());
                         }
                     }
                 }
+                else
+                {
+                    aindex = curAI.HandValue() - 7;
+                    graphvalue = hardMatrix[aindex, dindex];
+                    if (graphvalue == 0)
+                    {
+                        HitAI();
+                        StartCoroutine(AiTurn(curAI));
+                        //yield return new WaitForSeconds(1.5f);
+                    }
+                    else if (graphvalue == 1)
+                    {
+                        //double
+                    }
+                    else
+                    {
+                        if (aiHandCount > 1)
+                        {
+                            StartCoroutine(AiTurn(AI2));
+                        }
+                        else
+                        {
+                            StartCoroutine(DealersTurn());
+                        }
+                    }
+                }
+            }
+            //pair
+            else if (curAI.Hand()[0] == curAI.Hand()[1] && curAI.Hand().Count == 2)
+            {
+                if (curAI.Hand()[0] < 5 && curAI.HandValue() != 12)
+                {
+                    aindex = curAI.Hand()[0] - 2;
+                    graphvalue = pairMatrix[aindex, dindex];
+                    if (graphvalue == 0)
+                    {
+                        HitAI();
+                        StartCoroutine(AiTurn(curAI));
+                        //yield return new WaitForSeconds(1.5f);
+                    }
+                    else if (graphvalue == 1)
+                    {
+                        //split
 
+                        temp = curAI.Hand()[curAI.Hand().Count - 1];
+
+                        AI2.Push(temp);
+                        curAI.Hand().Remove(curAI.Hand().Count - 1);
+                        curAI.Push(deck.Pop());
+                        AI2.Push(deck.Pop());
+                        StartCoroutine(AiTurn(curAI));
+                        //yield return new WaitForSeconds(1.5f);
+                    }
+                    else
+                    {
+                        if (aiHandCount > 1)
+                        {
+                            StartCoroutine(AiTurn(AI2));
+                            //yield return new WaitForSeconds(1.5f);
+                        }
+                        else
+                        {
+                            StartCoroutine(DealersTurn());
+                        }
+                    }
+
+                }
+                else if (curAI.Hand()[0] > 5 && curAI.Hand()[0] < 10)
+                {
+                    aindex = curAI.Hand()[0] - 3;
+                    graphvalue = pairMatrix[aindex, dindex];
+                    if (graphvalue == 0)
+                    {
+                        HitAI();
+                        StartCoroutine(AiTurn(curAI));
+                        //yield return new WaitForSeconds(1.5f);
+                    }
+                    else if (graphvalue == 1)
+                    {
+                        //split
+
+                        temp = curAI.Hand()[curAI.Hand().Count - 1];
+
+                        AI2.Push(temp);
+                        curAI.Hand().Remove(curAI.Hand().Count - 1);
+                        curAI.Push(deck.Pop());
+                        AI2.Push(deck.Pop());
+                        StartCoroutine(AiTurn(curAI));
+                        //yield return new WaitForSeconds(1.5f);
+                    }
+                    else
+                    {
+
+                        if (aiHandCount > 1)
+                        {
+                            StartCoroutine(AiTurn(AI2));
+                            //yield return new WaitForSeconds(1.5f);
+                        }
+                        else
+                        {
+                            StartCoroutine(DealersTurn());
+                        }
+                    }
+                }
+                else if(curAI.Hand()[0] == 1 || curAI.Hand()[1] == 1)
+                {
+
+                    aindex = 7;
+                    graphvalue = pairMatrix[aindex, dindex];
+                    if (graphvalue == 0)
+                    {
+                        HitAI();
+                        StartCoroutine(AiTurn(curAI));
+                        //yield return new WaitForSeconds(1.5f);
+                    }
+                    else if (graphvalue == 1)
+                    {
+                        //split
+
+                        temp = curAI.Hand()[curAI.Hand().Count - 1];
+
+                        AI2.Push(temp);
+                        curAI.Hand().Remove(curAI.Hand().Count - 1);
+                        curAI.Push(deck.Pop());
+                        AI2.Push(deck.Pop());
+                        StartCoroutine(AiTurn(curAI));
+                        //yield return new WaitForSeconds(1.5f);
+                    }
+                    else
+                    {
+                        if (aiHandCount > 1)
+                        {
+                            StartCoroutine(AiTurn(AI2));
+                            //yield return new WaitForSeconds(1.5f);
+                        }
+                        else
+                        {
+                            StartCoroutine(DealersTurn());
+                        }
+                    }
+                    
+                }
+                else
+                {
+                    if (aiHandCount > 1)
+                    {
+                        StartCoroutine(AiTurn(AI2));
+                        //yield return new WaitForSeconds(1.5f);
+                    }
+                    else
+                    {
+                        StartCoroutine(DealersTurn());
+                    }
+                }
+            }
+            //soft hand
+            else if(isInHand())
+            {
+                if (curAI.HandValue() > 19)
+                {
+                    aindex = 7;
+                    graphvalue = hardMatrix[aindex, dindex];
+                    if (graphvalue == 0)
+                    {
+                        HitAI();
+                        StartCoroutine(AiTurn(curAI));
+                        //yield return new WaitForSeconds(1.5f);
+                    }
+                    else if (graphvalue == 1)
+                    {
+                        //double
+                    }
+                    else
+                    {
+                        if (aiHandCount > 1)
+                        {
+                            StartCoroutine(AiTurn(AI2));
+                        }
+                        else
+                        {
+                            StartCoroutine(DealersTurn());
+                        }
+                    }
+                }
+                else
+                {
+                    aindex = curAI.HandValue() - 13;
+                    graphvalue = hardMatrix[aindex, dindex];
+                    if (graphvalue == 0)
+                    {
+                        HitAI();
+                        StartCoroutine(AiTurn(curAI));
+                        //yield return new WaitForSeconds(1.5f);
+                    }
+                    else if (graphvalue == 1)
+                    {
+                        //double
+                    }
+                    else
+                    {
+                        if (aiHandCount > 1)
+                        {
+                            StartCoroutine(AiTurn(AI2));
+                        }
+                        else
+                        {
+                            StartCoroutine(DealersTurn());
+                        }
+                    }
+                }
+                yield return new WaitForSeconds(1.5f);
             }
         }
-        yield return new WaitForSeconds(1.5f);
+
     }
-
-
     /*
 public int refernceTable()
 {

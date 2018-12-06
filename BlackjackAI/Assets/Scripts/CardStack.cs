@@ -144,6 +144,7 @@ public class CardStack : MonoBehaviour
                 aces++;
             }
         }
+
         for(int i =0; i<aces; i++)
         {
             if(total +11 < 22)
