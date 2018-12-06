@@ -7,32 +7,38 @@ public class GameController : MonoBehaviour
 {
     int dealersFirstCard = -1;
     int numDecks = 1;
+    public int Dealercard;
+    public int PlayerCard;
+    public int AiCard;
+    public int currcount = 0;
+    public int trueCount = 0;
+    public int error = 0;
+
     public CardStack player;
     public CardStack dealer;
     public CardStack deck;
     public CardStack AI;
-    //public static AI ai;
+
     public Button HitButton;
     public Button StayButton;
     public Button Deal;
     public Button ShowCount;
-    public int Dealercard;
-    public int PlayerCard;
-    public int AiCard;
+
+
     List<int> DealerHand = new List<int>();
 
     List<int> PlayerHand = new List<int>();
     List<int> AiHand = new List<int>();
+    List<CardStack> players = new List<CardStack>();
     public bool CountDealerFlippedCard = false;
-    //public Button Spot1;
+
 
     public Text winText;
+    public Text aiText;
     public Text showCountText;
-    //public bool button = true;
-
-    // int[,] hardMatrix = new int[11, 10];
-    //int[,] softMatrix = new int[8, 10];
-    //int[,] pairMatrix = new int[8, 10];
+    public Text playerBet;
+    public Text AIBet;
+    public Text countDisplay;
 
     int[,] hardMatrix = new int[,] {      { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
                                           { 0, 0, 0, 1, 1, 0, 0, 0, 0, 0 },
@@ -67,41 +73,12 @@ public class GameController : MonoBehaviour
 
 
 
-    public int currcount = 0;
-    public int trueCount = 0;
-    public int error = 0;
 
-    public Text playerBet;
-    public Text AIBet;
-    public Text countDisplay;
-    //public AI ai;
-    //public bool button = true;
 
-    public static List<CardStack> players = new List<CardStack>();
 
-    //state 0: players turn
-    //state 1: AI's turn
-    //state 2: dealers turn
-    public static int state;
 
-    //public List<int> handList()
-    //{
-    //    return DealerHand;
-    //}
 
-    public void CreateMatrix(int height, int length, int[,] matrix, List<int> list)
-    { 
-        int tmpi = 0;
-        for(int i = 0; i < height-1; i ++)
-        {
-            for(int j = 0; j < length-1; j++)
-            {
-                matrix[i,j] = list[tmpi];
-                tmpi++;
-            }
-        }
-        Debug.Log(matrix[1,6]);
-    }
+
 
 
     public void Hit()
@@ -132,7 +109,6 @@ public class GameController : MonoBehaviour
             //player bust
             HitButton.interactable = false;
             StayButton.interactable = false;
-            //StartCoroutine(DealersTurn());
             StartCoroutine(AiTurn(AI));
             
         }
@@ -143,8 +119,6 @@ public class GameController : MonoBehaviour
     {
         HitButton.interactable = false;
         StayButton.interactable = false;
-        // dealer actions
-        //StartCoroutine(DealersTurn());
         StartCoroutine(AiTurn(AI));
     }
 
@@ -162,13 +136,8 @@ public class GameController : MonoBehaviour
         HitButton.interactable = true;
         StayButton.interactable = true;
         dealersFirstCard = -1;
-        //flag = false;
-        //Debug.Log("deck count" + deck.CardCount);
         DealerHand.Clear();
-        PlayerHand.Clear();
-
-        //Dealercard = 0;
-        // PlayerCard = 0; 
+        PlayerHand.Clear(); 
         AiHand.Clear();
         if (deck.CardCount < 15 * numDecks)
         {
@@ -202,11 +171,7 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
-        //Debug.Log(matrix1[15]);
-        //ai = new AI();
-        //CreateMatrix(11, 10, hardMatrix, matrix1);
-        winText.text = "Welcome to Blackjack!";
-       //int gg = player.Hand()[0];
+
         currcount = 0;
         players.Add(player);
         players.Add(AI);
@@ -216,13 +181,15 @@ public class GameController : MonoBehaviour
 
 
     void StartGame()
-    {
-        //Deal.interactable = true; 
+    { 
         HitButton.interactable = false;
         StayButton.interactable = false;
         winText.text = "";
+        aiText.text = "";
         // sit.text = "sit";
         int numPlayers = players.Count;
+
+
         for (int i = 0; i < 2; i++)
         {
             for (int a = 0; a < numPlayers; a++)
@@ -246,24 +213,34 @@ public class GameController : MonoBehaviour
                     HitDealer();
                 }
             }
-
-
-
+        }
+        if(player.HandValue()==21 && AI.HandValue() == 21)
+        {
+            HitButton.interactable = false;
+            StayButton.interactable = false;
+            StartCoroutine(DealersTurn());
+            
+        }
+        else if(player.HandValue()==21)
+        {
+            HitButton.interactable = false;
+            StayButton.interactable = false;
+            StartCoroutine(AiTurn(AI));
+        }
+        else
+        {
+            HitButton.interactable = true;
+            StayButton.interactable = true;
         }
 
-
-        Debug.Log("dealer card" + dealer.HandValue());
         // if (players.Count == 2)
         // {
         //    StartCoroutine(AiTurn());
         //  }
         // else
         // {
-        HitButton.interactable = true;
-        StayButton.interactable = true;
-        // }
-        Debug.Log("num players= " + players.Count);
 
+        // }
 
     }
 
@@ -282,7 +259,6 @@ public class GameController : MonoBehaviour
         }
         dealer.Push(Dealercard);
         DealerHand = dealer.Hand();
-        //DealerHand.Add(Dealercard % 13 + 2);
 
         // UpdateCount(Dealercard);
         if (dealer.CardCount >= 2)
@@ -290,24 +266,19 @@ public class GameController : MonoBehaviour
             CardStackView view = dealer.GetComponent<CardStackView>();
             view.Toggle(Dealercard, true);
         }
-
-        //Debug.Log("Dcard1 = " + DealerHand[0]);
-        //Debug.Log("Dcard2" + DealerHand[1]);
-
     }
 
 
     public void UpdateCount(int newcard)
     {
         //makes card normal deck number
-        newcard = newcard % 13 + 2;
-
-        //if newcard is greater than 11, something went wrong, make error=1
-        if (newcard > 11)
+        newcard = newcard % 13;
+        if(newcard<8)
         {
-            error = 1;
-            return;
+
         }
+
+
 
         //if card is a 7,8, or 9, there is no update to card count
         if (newcard == 7 || newcard == 8 || newcard == 9)
@@ -328,6 +299,14 @@ public class GameController : MonoBehaviour
                 trueCount += currcount / numDecks;
                 break;
             case 11:
+                currcount -= 1;
+                trueCount += currcount / numDecks;
+                break;
+            case 12:
+                currcount -= 1;
+                trueCount += currcount / numDecks;
+                break;
+            case 13:
                 currcount -= 1;
                 trueCount += currcount / numDecks;
                 break;
@@ -368,7 +347,7 @@ public class GameController : MonoBehaviour
         view.ShowCards();
         UpdateCount(dealersFirstCard);
         yield return new WaitForSeconds(1f);
-        if (player.HandValue() < 22)
+        if (player.HandValue() < 22 && AI.HandValue() <22)
         {
             while (dealer.HandValue() < 17)
             {
@@ -379,11 +358,6 @@ public class GameController : MonoBehaviour
                 cop++;
 
             }
-            Debug.Log("dcard1 " + DealerHand[0]);
-            Debug.Log("dcard2 " + DealerHand[1]);
-            // Debug.Log("dcard3 " + dealer.Hand(2));
-            //Debug.Log("dcard4 " + dealer.Hand(3));
-
         }
 
         if (player.HandValue() > 21 || dealer.HandValue() > player.HandValue() && dealer.HandValue() < 22)
@@ -398,6 +372,18 @@ public class GameController : MonoBehaviour
         {
             winText.text = "Push";
         }
+        if (AI.HandValue() > 21 || dealer.HandValue() > AI.HandValue() && dealer.HandValue() < 22)
+        {
+            aiText.text = "You lose";
+        }
+        else if (dealer.HandValue() > 21 || AI.HandValue() < 22 && AI.HandValue() > dealer.HandValue())
+        {
+            aiText.text = "You win";
+        }
+        else
+        {
+            aiText.text = "Push";
+        }
         yield return new WaitForSeconds(1f);
         Deal.interactable = true;
     }
@@ -411,7 +397,7 @@ public class GameController : MonoBehaviour
     {
         AiCard = deck.Pop();
         AI.Push(AiCard);
-        AiHand.Add(AiCard % 13 + 2);
+        AiHand.Add(AiCard);
         UpdateCount(AiCard);
 
     }
@@ -442,13 +428,10 @@ public class GameController : MonoBehaviour
     {
         yield return new WaitForSeconds(1.5f);
         CardStack curAI = bleh;
-        Debug.Log("s = " + curAI.HandValue());
         aiHandCount = 0;
         HitButton.interactable = false;
         StayButton.interactable = false;
         int temp;
-        int dc;
-        int hv;
         int dindex = dealer.Hand()[1] - 2;
         int aindex = 0;
         int graphvalue = 0;
@@ -480,7 +463,7 @@ public class GameController : MonoBehaviour
         else
         {
             //hard hand
-            if ((curAI.Hand()[0] != curAI.Hand()[1]) && !isInHand())
+            if ((curAI.Hand()[0] != curAI.Hand()[1]) && !curAI.Hand().Contains(11))
             {
                 if (curAI.HandValue() < 8)
                 {
@@ -692,7 +675,7 @@ public class GameController : MonoBehaviour
                 }
             }
             //soft hand
-            else if(isInHand())
+            else if(curAI.Hand().Contains(11))
             {
                 if (curAI.HandValue() > 19)
                 {
